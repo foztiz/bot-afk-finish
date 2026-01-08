@@ -1,0 +1,19 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "A 24/7 Minecraft AFK bot using Mineflayer with Microsoft authentication, designed to run continuously on Replit.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/msal-node": "^3.7.0",
+    "adm-zip": "^0.5.16",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mineflayer": "^4.25.0"
+  }
+}

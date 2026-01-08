@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minecraft AFK Bot Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .config-section, .status-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-stop {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            color: white;
+        }
+
+        .btn-restart {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-online {
+            background-color: #4CAF50;
+        }
+
+        .status-offline {
+            background-color: #f44336;
+        }
+
+        .status-connecting {
+            background-color: #ff9800;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .logs-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logs {
+            background: #000;
+            border-radius: 8px;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            white-space: pre-wrap;
+        }
+
+        .log-timestamp {
+            color: #888;
+        }
+
+        .log-info {
+            color: #4CAF50;
+        }
+
+        .log-error {
+            color: #f44336;
+        }
+
+        .log-warning {
+            color: #ff9800;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #4CAF50;
+        }
+
+        .notification.error {
+            background: #f44336;
+        }
+
+        .notification.info {
+            background: #2196F3;
+        }
+
+        @media (max-width: 768px) {
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Minecraft AFK Bot Control Panel</h1>
+            <p>Manage your 24/7 Minecraft presence</p>
+        </div>
+
+        <div class="control-panel">
+            <!-- Configuration Section -->
+            <div class="config-section">
+                <h2 class="section-title">Bot Configuration</h2>
+                
+                <div class="form-group">
+                    <label for="serverIp">Server IP</label>
+                    <input type="text" id="serverIp" placeholder="e.g., donutsmp.net" value="donutsmp.net">
+                </div>
+
+                <div class="form-group">
+                    <label for="serverPort">Server Port</label>
+                    <input type="number" id="serverPort" placeholder="25565" value="25565">
+                </div>
+
+                <div class="form-group">
+                    <label for="mcVersion">Minecraft Version</label>
+                    <input type="text" id="mcVersion" placeholder="e.g., 1.21.4" value="1.21.4">
+                </div>
+
+                <div class="form-group">
+                    <label for="msEmail">Microsoft Account Email</label>
+                    <input type="email" id="msEmail" placeholder="your-email@gmail.com" value="keyliankubani11@gmail.com">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-start" onclick="startBot()">Start Bot</button>
+                    <button class="btn btn-stop" onclick="stopBot()">Stop Bot</button>
+                    <button class="btn btn-restart" onclick="restartBot()">Restart Bot</button>
+                </div>
+            </div>
+
+            <!-- Status Section -->
+            <div class="status-section">
+                <h2 class="section-title">Bot Status</h2>
+                
+                <div class="status-indicator">
+                    <div class="status-dot status-offline" id="statusDot"></div>
+                    <span id="statusText">Offline</span>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Uptime</div>
+                        <div class="info-value" id="uptime">0h 0m 0s</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Reconnects</div>
+                        <div class="info-value" id="reconnects">0</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Server</div>
+                        <div class="info-value" id="server">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Last Error</div>
+                        <div class="info-value" id="lastError">None</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Section -->
+        <div class="logs-section">
+            <h2 class="section-title">Chat Messages</h2>
+            <div class="form-group">
+                <label for="chatMessage">Send Chat Message</label>
+                <div style="display: flex; gap: 10px; align-items: flex-end;">
+                    <input type="text" id="chatMessage" placeholder="Enter message to send to Minecraft chat" style="flex: 1;" onkeypress="handleChatKeyPress(event)">
+                    <button class="btn btn-start" onclick="sendChatMessage()" id="chatBtn">Send</button>
+                </div>
+            </div>
+            <p style="font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 5px;">
+                💡 Bot also sends automatic AFK messages every 10 minutes to prevent server kicks
+            </p>
+        </div>
+
+        <!-- Logs Section -->
+        <div class="logs-section">
+            <h2 class="section-title">Bot Logs</h2>
+            <div class="logs" id="logs">
+                <div class="log-entry log-info">Bot control panel ready...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables to track bot state
+        let botStatus = {
+            connected: false,
+            startTime: null,
+            server: '',
+            reconnects: 0,
+            lastError: null
+        };
+
+        // Update status display every 2 seconds
+        setInterval(updateStatus, 2000);
+        
+        // Update logs every 3 seconds
+        setInterval(updateLogs, 3000);
+
+        // Initial status check
+        updateStatus();
+
+        /**
+         * Start the Minecraft bot with current configuration
+         * Sends POST request to /api/start with form data
+         */
+        async function startBot() {
+            const config = getFormData();
+            
+            try {
+                showNotification('Starting bot...', 'info');
+                
+                const response = await fetch('/api/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(config)
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('Bot started successfully!', 'success');
+                } else {
+                    showNotification(result.error || 'Failed to start bot', 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        /**
+         * Stop the currently running bot
+         * Sends POST request to /api/stop
+         */
+        async function stopBot() {
+            try {
+                showNotification('Stopping bot...', 'info');
+                
+                const response = await fetch('/api/stop', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification('Bot stopped successfully!', 'success');
+                } else {
+                    showNotification(result.error || 'Failed to stop bot', 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        /**
+         * Restart the bot with current configuration
+         * Combines stop and start operations
+         */
+        async function restartBot() {
+            try {
+                showNotification('Restarting bot...', 'info');
+                
+                // First stop the bot
+                await fetch('/api/stop', { method: 'POST' });
+                
+                // Wait a moment, then start with new config
+                setTimeout(async () => {
+                    const config = getFormData();
+                    const response = await fetch('/api/start', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(config)
+                    });
+
+                    if (response.ok) {
+                        showNotification('Bot restarted successfully!', 'success');
+                    } else {
+                        const result = await response.json();
+                        showNotification(result.error || 'Failed to restart bot', 'error');
+                    }
+                }, 2000);
+                
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        /**
+         * Get form data from input fields
+         * Returns configuration object for the bot
+         */
+        function getFormData() {
+            return {
+                serverIp: document.getElementById('serverIp').value,
+                serverPort: parseInt(document.getElementById('serverPort').value) || 25565,
+                mcVersion: document.getElementById('mcVersion').value,
+                msEmail: document.getElementById('msEmail').value
+            };
+        }
+
+        /**
+         * Update bot status display
+         * Fetches current status from /api/status endpoint
+         */
+        async function updateStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const status = await response.json();
+                
+                // Update status indicator
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                
+                statusDot.className = 'status-dot';
+                if (status.connected) {
+                    statusDot.classList.add('status-online');
+                    statusText.textContent = 'Connected';
+                } else if (status.reconnectAttempts > 0) {
+                    statusDot.classList.add('status-connecting');
+                    statusText.textContent = 'Connecting...';
+                } else {
+                    statusDot.classList.add('status-offline');
+                    statusText.textContent = 'Offline';
+                }
+
+                // Update info grid
+                document.getElementById('uptime').textContent = status.uptime || '0h 0m 0s';
+                document.getElementById('reconnects').textContent = status.totalReconnects || 0;
+                document.getElementById('server').textContent = status.server || '-';
+                document.getElementById('lastError').textContent = status.lastError || 'None';
+                
+                botStatus = status;
+                
+            } catch (error) {
+                console.error('Failed to update status:', error);
+            }
+        }
+
+        /**
+         * Update logs display
+         * Fetches recent logs from /api/logs endpoint
+         */
+        async function updateLogs() {
+            try {
+                const response = await fetch('/api/logs');
+                const data = await response.json();
+                
+                const logsContainer = document.getElementById('logs');
+                
+                if (data.logs && data.logs.length > 0) {
+                    // Clear existing logs and add new ones
+                    logsContainer.innerHTML = '';
+                    
+                    data.logs.forEach(log => {
+                        const logEntry = document.createElement('div');
+                        logEntry.className = 'log-entry';
+                        
+                        // Determine log type for styling
+                        if (log.includes('❌') || log.includes('error')) {
+                            logEntry.classList.add('log-error');
+                        } else if (log.includes('⚠️') || log.includes('warning')) {
+                            logEntry.classList.add('log-warning');
+                        } else if (log.includes('✅') || log.includes('success')) {
+                            logEntry.classList.add('log-info');
+                        }
+                        
+                        logEntry.textContent = log;
+                        logsContainer.appendChild(logEntry);
+                    });
+                    
+                    // Auto-scroll to bottom
+                    logsContainer.scrollTop = logsContainer.scrollHeight;
+                }
+                
+            } catch (error) {
+                console.error('Failed to update logs:', error);
+            }
+        }
+
+        /**
+         * Show notification to user
+         * Creates a temporary notification element
+         */
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Hide and remove notification after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Load saved configuration from localStorage
+        window.addEventListener('load', () => {
+            const savedConfig = localStorage.getItem('botConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                document.getElementById('serverIp').value = config.serverIp || '';
+                document.getElementById('serverPort').value = config.serverPort || 25565;
+                document.getElementById('mcVersion').value = config.mcVersion || '';
+                document.getElementById('msEmail').value = config.msEmail || '';
+            }
+        });
+
+        // Save configuration to localStorage when form changes
+        ['serverIp', 'serverPort', 'mcVersion', 'msEmail'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => {
+                localStorage.setItem('botConfig', JSON.stringify(getFormData()));
+            });
+        });
+
+        /**
+         * Send chat message through the bot
+         * Posts message to /api/chat endpoint
+         */
+        async function sendChatMessage() {
+            const messageInput = document.getElementById('chatMessage');
+            const message = messageInput.value.trim();
+            const chatBtn = document.getElementById('chatBtn');
+            
+            if (!message) {
+                showNotification('Please enter a message', 'error');
+                return;
+            }
+            
+            if (!botStatus.connected) {
+                showNotification('Bot must be connected to send messages', 'error');
+                return;
+            }
+            
+            try {
+                chatBtn.disabled = true;
+                chatBtn.textContent = 'Sending...';
+                
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                if (response.ok) {
+                    showNotification(`Message sent: ${message}`, 'success');
+                    messageInput.value = '';
+                } else {
+                    const result = await response.json();
+                    showNotification(result.error || 'Failed to send message', 'error');
+                }
+                
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            } finally {
+                chatBtn.disabled = false;
+                chatBtn.textContent = 'Send';
+            }
+        }
+
+        /**
+         * Handle Enter key press in chat input
+         */
+        function handleChatKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+    </script>
+</body>
+</html>
